@@ -1,0 +1,45 @@
+<abp-page [title]="'::Menu:Recommendations' | abpLocalization">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <p class="text-muted mb-0">Kişiselleştirilmiş öneriler, mod ve günlük kayıtlarınıza dayanır.</p>
+            <button class="btn btn-outline-primary" (click)="generateNew()" [disabled]="isLoading">
+                <i class="fas fa-magic me-2" [class.fa-spin]="isLoading"></i>
+                {{ isLoading ? 'Analiz Ediliyor...' : 'Yeni Öneriler' }}
+            </button>
+        </div>
+
+        <div class="row g-4">
+            <div *ngFor="let item of items" class="col-md-6 col-lg-4">
+                <div class="card h-100 shadow-sm border-0 hovering-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <span class="badge rounded-pill p-2 px-3" [ngClass]="getColor(item.type)">
+                                <i class="fas me-1" [ngClass]="getIcon(item.type)"></i>
+                                {{ getTypeName(item.type) }}
+                            </span>
+                            <small class="text-muted">{{ item.creationTime | date:'shortDate' }}</small>
+                        </div>
+
+                        <h5 class="card-title">{{ item.title }}</h5>
+                        <p class="card-text text-muted small">{{ item.reasoning }}</p>
+
+                    </div>
+                    <div class="card-footer bg-transparent border-top-0 pb-3" *ngIf="item.externalUrl">
+                        <a [href]="item.externalUrl" target="_blank"
+                            class="btn btn-sm btn-light w-100 text-primary fw-bold">
+                            Aç <i class="fas fa-external-link-alt ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div *ngIf="items.length === 0 && !isLoading" class="col-12 text-center p-5">
+                <div class="mb-3 text-muted">
+                    <i class="fas fa-lightbulb fs-1"></i>
+                </div>
+                <h5>Henüz öneri bulunamadı.</h5>
+                <p>"Yeni Öneriler" butonuna tıklayarak başlayın!</p>
+            </div>
+        </div>
+    </div>
+</abp-page>

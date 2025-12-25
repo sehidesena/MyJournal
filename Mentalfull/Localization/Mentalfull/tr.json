@@ -1,0 +1,22 @@
+{
+  "culture": "tr",
+  "texts": {
+    "AppName": "Mentalfull",
+    "Welcome_Title": "Hoşgeldiniz",
+    "Welcome_Text": "Bu proje tek katmanlı ABP uygulamaları yapmak için bir başlangıç şablonudur.",
+    "Menu:Home": "Ana sayfa",
+    "Menu:Dashboard": "Panel",
+    "Menu:Journal": "Günlük",
+    "Menu:MoodTracker": "Mod Takibi",
+    "Menu:Recommendations": "Öneriler",
+    "Menu:Chat": "AI Asistan",
+    "Menu:JournalEntries": "Günlük Girişleri",
+    "Enum:EntryType:0": "Metin",
+    "Enum:EntryType:1": "Ses",
+    "Enum:RecommendationType:0": "Müzik",
+    "Enum:RecommendationType:1": "Meditasyon",
+    "Enum:RecommendationType:2": "Kitap",
+    "Enum:RecommendationType:3": "Aktivite",
+    "Enum:RecommendationType:4": "Makale"
+  }
+}

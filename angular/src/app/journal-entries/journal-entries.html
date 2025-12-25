@@ -1,0 +1,178 @@
+<abp-page abpPermission="JournalEntries">
+  <div class="journal-container">
+    <!-- Header -->
+    <div class="journal-header">
+      <div class="header-content">
+        <h1 class="journal-title">
+          <i class="fas fa-book-open me-2"></i>
+          {{ 'Günlük Kayıtları' | abpLocalization }}
+        </h1>
+        <p class="journal-subtitle">Hayatınızı metin veya ses ile kaydedin.</p>
+      </div>
+      <button class="btn btn-primary btn-create" (click)="createJournal()">
+        <i class="fas fa-plus me-2"></i>
+        Yeni Günlük
+      </button>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters-section">
+      <div class="search-box">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" class="form-control" placeholder="Günlüğünüzde arayın..." [(ngModel)]="searchText" />
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-state">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Yükleniyor...</span>
+      </div>
+      <p class="mt-3">Günlük kayıtlarınız yükleniyor...</p>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoading && getFilteredJournals().length === 0" class="empty-state">
+      <div class="empty-icon">📖</div>
+      <h3>Henüz kayıtlı günlük yok</h3>
+      <p>İlk günlük kaydını oluşturarak günlük yolculuğunuza başlayın!</p>
+      <button class="btn btn-primary" (click)="createJournal()">
+        <i class="fas fa-plus me-2"></i>
+        İlk Günlük Kayıt Oluştur
+      </button>
+    </div>
+
+    <!-- Journal Entries Grid -->
+    <div *ngIf="!isLoading && getFilteredJournals().length > 0" class="journal-grid">
+      <div *ngFor="let journal of getFilteredJournals()" class="journal-card"
+        [class.voice-entry]="journal.type === entryTypes.Voice" [class.pinned]="journal.isPinned">
+        <!-- Pin Badge -->
+        <div class="pin-badge" *ngIf="journal.isPinned">
+          <i class="fas fa-thumbtack"></i>
+        </div>
+
+        <!-- Card Header -->
+        <div class="card-header-custom">
+          <div class="type-indicator">
+            <i class="fas" [ngClass]="journal.type === entryTypes.Voice ? 'fa-microphone' : 'fa-align-left'"></i>
+            <span class="ms-1">{{ 'Enum:EntryType:' + journal.type | abpLocalization }}</span>
+          </div>
+          <div class="entry-date">
+            <i class="fas fa-calendar-alt me-1"></i>
+            {{ journal.entryDate | date: 'd MMM y' }}
+            <span class="time">{{ journal.entryDate | date: 'shortTime' }}</span>
+          </div>
+        </div>
+
+        <!-- Card Body -->
+        <div class="card-body-custom">
+          <h3 class="entry-title">{{ journal.title }}</h3>
+
+          <div class="audio-player" *ngIf="journal.type === entryTypes.Voice && journal.audioUrl">
+            <audio controls class="w-100">
+              <source [src]="journal.audioUrl" type="audio/mpeg">
+              Tarayıcınız ses elementini desteklemiyor.
+            </audio>
+          </div>
+
+          <p class="entry-content">{{ journal.content }}</p>
+
+          <div class="ai-badge" *ngIf="journal.hasAiAnalysis">
+            <i class="fas fa-robot me-1"></i>
+            AI Analizli
+          </div>
+        </div>
+
+        <!-- Card Footer -->
+        <div class="card-footer-custom">
+          <button class="action-btn" (click)="editJournal(journal.id!)" title="Düzenle">
+            <i class="fas fa-edit"></i>
+          </button>
+          <button class="action-btn" (click)="togglePin(journal.id!)" title="Sabitle">
+            <i class="fas fa-thumbtack" [class.text-warning]="journal.isPinned"></i>
+          </button>
+          <button class="action-btn text-danger" (click)="deleteJournal(journal.id!)" title="Sil">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</abp-page>
+
+<!-- Modal -->
+<div class="modal-overlay" *ngIf="isModalOpen" (click)="closeModal()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <div class="modal-header-custom">
+      <h2>{{ selectedJournal.id ? 'Girişi Düzenle' : 'Yeni Giriş' }}</h2>
+      <button class="btn-close-custom" (click)="closeModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <div class="modal-body-custom">
+      <form [formGroup]="form" (ngSubmit)="save()">
+        <div class="form-group">
+          <label for="title">Başlık</label>
+          <input type="text" id="title" class="form-control" formControlName="title"
+            placeholder="Girişinize bir başlık verin..." />
+        </div>
+
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="type">Tür</label>
+              <select id="type" class="form-select" formControlName="type">
+                <option [ngValue]="entryTypes.Text">Metin</option>
+                <option [ngValue]="entryTypes.Voice">Ses</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="entryDate">Tarih ve Saat</label>
+              <input type="datetime-local" id="entryDate" class="form-control" formControlName="entryDate" />
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group" *ngIf="form.get('type')?.value == entryTypes.Voice">
+          <label class="mb-2">Ses Kaydı</label>
+          <app-voice-recorder (recordingCompleted)="onRecordingCompleted($event)"></app-voice-recorder>
+
+          <div class="mt-2" *ngIf="form.get('audioUrl')?.value">
+            <input type="hidden" formControlName="audioUrl">
+            <div class="alert alert-success p-2 mt-2">
+              <i class="fas fa-check-circle me-1"></i>
+              Ses kaydı başarıyla yüklendi.
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="content">İçerik / Döküm</label>
+          <textarea id="content" class="form-control" formControlName="content" rows="8"
+            placeholder="Düşüncelerinizi buraya yazın..."></textarea>
+        </div>
+
+        <div class="form-check-custom">
+          <input type="checkbox" id="isPinned" class="form-check-input" formControlName="isPinned" />
+          <label for="isPinned" class="form-check-label">
+            <i class="fas fa-thumbtack me-1"></i>
+            Bu girişi sabitle
+          </label>
+        </div>
+      </form>
+    </div>
+
+    <div class="modal-footer-custom">
+      <button type="button" class="btn btn-secondary" (click)="closeModal()">
+        İptal
+      </button>
+      <button type="button" class="btn btn-primary" (click)="save()" [disabled]="form.invalid">
+        <i class="fas fa-save me-2"></i>
+        Kaydet
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,22 @@
+{
+  "culture": "en",
+  "texts": {
+    "AppName": "Mentalfull",
+    "Welcome_Title": "Welcome",
+    "Welcome_Text": "This is a minimalist, single layer application startup template for the ABP Framework.",
+    "Menu:Home": "Home",
+    "Menu:Dashboard": "Dashboard",
+    "Menu:Journal": "Journal",
+    "Menu:MoodTracker": "Mood Tracker",
+    "Menu:Recommendations": "Recommendations",
+    "Menu:Chat": "AI Assistant",
+    "Menu:JournalEntries": "Journal Entries",
+    "Enum:EntryType:0": "Text",
+    "Enum:EntryType:1": "Voice",
+    "Enum:RecommendationType:0": "Music",
+    "Enum:RecommendationType:1": "Meditation",
+    "Enum:RecommendationType:2": "Book",
+    "Enum:RecommendationType:3": "Activity",
+    "Enum:RecommendationType:4": "Article"
+  }
+}

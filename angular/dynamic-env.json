@@ -1,0 +1,21 @@
+{
+  "production": true,
+  "application": {
+    "baseUrl":"https://mentalfull-web",
+    "name": "Mentalfull",
+    "logoUrl": ""
+  },
+  "oAuthConfig": {
+    "issuer": "https://mentalfull-api/",
+    "redirectUri": "https://mentalfull",
+    "clientId": "Mentalfull_App",
+    "responseType": "code",
+    "scope": "offline_access openid profile email phone"
+  },
+  "apis": {
+    "default": {
+      "url": "https://mentalfull-api",
+      "rootNamespace": "Mentalfull"
+    }
+  }
+}

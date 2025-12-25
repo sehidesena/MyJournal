@@ -1,0 +1,120 @@
+<div *ngIf="!hasLoggedIn" class="text-center p-5 hero-section">
+  <div class="container">
+    <h1 class="display-3 fw-bold text-primary mb-4">MyJournal'a Hoşgeldiniz</h1>
+    <p class="lead mb-5 text-muted">
+      Yapay zeka destekli günlüğün seni bekliyor.
+      <br>Metinlerinizi yazarak, yapay zeka ile duygusal analizler alabilirsiniz.
+    </p>
+
+    <button (click)="login()" class="btn btn-primary btn-lg rounded-pill px-5 py-3 shadow-lg">
+      <i class="fas fa-sign-in-alt me-2"></i> Başlayın
+    </button>
+  </div>
+</div>
+
+<div *ngIf="hasLoggedIn" class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="fw-bold text-dark">Hoş Geldiniz</h2>
+      <p class="text-muted">Duygusal sağlığınıza genel bakış</p>
+    </div>
+    <div>
+      <button class="btn btn-light border" (click)="ngOnInit()">
+        <i class="fas fa-sync-alt"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- Mood Card -->
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm border-0">
+        <div class="card-body p-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="card-title fw-bold mb-0 text-secondary"><i class="fas fa-smile me-2"></i> Kayıtlı Mod Durumu</h5>
+          </div>
+
+          <div *ngIf="latestMood" class="text-center py-3">
+            <div class="display-1 mb-2">{{ latestMood.intensity >= 7 ? '😊' : (latestMood.intensity >= 4 ? '😐' : '😟')
+              }}</div>
+            <h3 class="fw-bold text-primary">{{ latestMood.primaryEmotion }}</h3>
+            <p class="opacity-75">Yoğunluk: {{ latestMood.intensity }}/10</p>
+            <small class="d-block mt-2 opacity-50">{{ latestMood.timestamp | date:'shortTime' }} bugün</small>
+          </div>
+
+          <div *ngIf="!latestMood" class="text-center py-4">
+            <p>Henüz bir kayıt yok.</p>
+            <a routerLink="/mood-tracking" class="btn btn-outline-primary rounded-pill text-primary fw-bold">Şimdi
+              Kaydet</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats / Journal -->
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm border-0">
+        <div class="card-body p-4">
+          <h5 class="card-title fw-bold mb-4 text-secondary"><i class="fas fa-book me-2"></i> Günlük</h5>
+
+          <div class="text-center py-2">
+            <h1 class="display-2 fw-bold text-primary">{{ journalCount }}</h1>
+            <p class="text-muted">Toplam Günlük Kayıt</p>
+          </div>
+
+          <div class="d-grid gap-2 mt-4">
+            <a routerLink="/journal-entries" class="btn btn-outline-primary rounded-pill">
+              <i class="fas fa-plus me-2"></i> Yeni Günlük Yaz
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recommendations -->
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm border-0">
+        <div class="card-body p-4">
+          <h5 class="card-title fw-bold mb-3 text-secondary"><i class="fas fa-lightbulb me-2"></i> Sizin İçin</h5>
+
+          <div *ngIf="latestRec" class="bg-white p-3 rounded shadow-sm">
+            <h6 class="fw-bold text-primary mb-1">{{ latestRec.title }}</h6>
+            <p class="text-muted small mb-2">{{ latestRec.reasoning }}</p>
+            <a *ngIf="latestRec.externalUrl" [href]="latestRec.externalUrl" target="_blank"
+              class="btn btn-sm btn-link p-0 text-decoration-none">Aç <i class="fas fa-arrow-right small"></i></a>
+          </div>
+
+          <div *ngIf="!latestRec" class="text-center py-4 text-muted">
+            <p>Yeni öneriler burada görünecek.</p>
+          </div>
+
+          <div class="mt-3 text-center">
+            <a routerLink="/recommendations" class=" btn btn-outline-primary rounded-pill text-decoration-none small fw-bold">Tüm Önerileri Gör</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Access Row -->
+  <div class="row mt-4">
+    <div class="col-12">
+      <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+          <div class="row align-items-center">
+            <div class="col-md-8">
+              <h4 class="fw-bold">Konuşacak birine mi ihtiyacınız var?</h4>
+              <p class="text-muted mb-0">AI asistanımız duygularınızı işlemenize yardımcı olmak ve sizi dinlemek için
+                burada.</p>
+            </div>
+            <div class="col-md-4 text-end">
+              <a routerLink="/chat" class="btn btn-dark btn-lg rounded-pill px-4">
+                <i class="fas fa-comments me-2"></i> Sohbet Başlat
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,21 @@
+{
+  "production": true,
+  "application": {
+    "baseUrl":"http://localhost:4200",
+    "name": "Mentalfull",
+    "logoUrl": ""
+  },
+  "oAuthConfig": {
+    "issuer": "https://localhost:44376",
+    "redirectUri": "https://localhost:44376",
+    "clientId": "Mentalfull_App",
+    "responseType": "code",
+    "scope": "offline_access openid profile email phone Mentalfull"
+  },
+  "apis": {
+    "default": {
+      "url": "https://localhost:44376",
+      "rootNamespace": "Mentalfull"
+    }
+  }
+}

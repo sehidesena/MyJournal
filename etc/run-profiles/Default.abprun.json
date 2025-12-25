@@ -1,0 +1,37 @@
+﻿{
+  "applications": {
+    "Mentalfull.Angular": {
+      "type": "cli",
+      "workingDirectory": "../../angular",
+      "startCommand": "./start.ps1",
+      "launchUrl": "http://localhost:4200",
+      "execution": {
+        "order": 0
+      }
+    },
+    "Mentalfull": {
+      "type": "dotnet-project",
+      "launchUrl": "https://localhost:44376",
+      "healthCheckEndpoint": "/health-status",
+      "healthUiEndpoint": "/health-ui",
+      "path": "../../Mentalfull/Mentalfull.csproj",
+      "execution": {
+        "order": 1
+      }
+    }
+  },
+  "tasks": {
+    "Initialize Solution":{
+    "type": "cli",
+    "runOnSolutionOpen": true,
+    "startCommand": "etc/scripts/initialize-solution.ps1", 
+    "workingDirectory": "../../"
+    },
+    "Migrate Database":{
+    "type": "cli",
+    "runOnSolutionOpen": false,
+    "startCommand": "etc/scripts/migrate-database.ps1",
+    "workingDirectory": "../../"
+    }
+  } 
+}

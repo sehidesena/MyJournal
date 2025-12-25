@@ -1,0 +1,108 @@
+<abp-page [title]="'::Menu:MoodTracker' | abpLocalization">
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h4>Mod Geçmişi</h4>
+                        <div class="d-flex flex-wrap gap-2">
+                            <div *ngFor="let stat of stats | keyvalue" class="badge bg-light text-dark border p-2">
+                                {{stat.key}}: {{stat.value}}
+                            </div>
+                            <div *ngIf="(stats | keyvalue)?.length === 0" class="text-muted">Mod kayıtları bulunamadı.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 text-end">
+                <button class="btn btn-primary btn-lg w-100" (click)="openLogModal()">
+                    <i class="fas fa-plus-circle me-2"></i> Mod Ekle
+                </button>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="list-group">
+                    <div *ngFor="let log of moodLogs"
+                        class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="d-flex align-items-center mb-1">
+                                <span class="fs-4 me-2">{{ getEmoji(log.intensity) }}</span>
+                                <h5 class="mb-0 me-2">{{ log.primaryEmotion }}</h5>
+                                <span class="badge bg-secondary rounded-pill">Güçlüklü: {{ log.intensity }}/10</span>
+                            </div>
+                            <p class="mb-1 text-muted">{{ log.note }}</p>
+                        </div>
+                        <div class="text-end">
+                            <small class="text-muted">{{ log.timestamp | date:'medium' }}</small>
+                        </div>
+                    </div>
+                    <div *ngIf="moodLogs.length === 0" class="text-center p-5 text-muted">
+                        <i class="fas fa-chart-line fs-1 mb-3"></i>
+                        <p>Mod kayıtları bulunamadı.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</abp-page>
+
+<!-- Modal -->
+<div class="modal fade show d-block" *ngIf="isModalOpen" tabindex="-1" style="background: rgba(0,0,0,0.5)">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Mod Ekle</h5>
+                <button type="button" class="btn-close" (click)="closeModal()"></button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="form">
+                    <div class="mb-3">
+                        <label class="form-label">Güçlüklü (1-10)</label>
+                        <div class="d-flex justify-content-between">
+                            <button *ngFor="let e of moodEmojis" class="btn btn-sm rounded-circle"
+                                [class.btn-primary]="form.get('intensity')?.value === e.value"
+                                [class.btn-outline-secondary]="form.get('intensity')?.value !== e.value"
+                                (click)="selectIntensity(e.value)" title="{{e.label}}">
+                                {{e.emoji}}
+                            </button>
+                        </div>
+                        <div class="text-center mt-2 fw-bold text-primary">
+                            {{ moodEmojis[form.get('intensity')?.value - 1]?.label }}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Birincil Emosyon</label>
+                        <div class="d-flex flex-wrap gap-2">
+                            <button *ngFor="let em of commonEmotions" class="btn btn-sm rounded-pill"
+                                [class.btn-info]="form.get('primaryEmotion')?.value === em"
+                                [class.btn-outline-secondary]="form.get('primaryEmotion')?.value !== em"
+                                (click)="selectEmotion(em)">
+                                {{em}}
+                            </button>
+                            <input type="text" class="form-control mt-2" formControlName="primaryEmotion"
+                                placeholder="Or type here...">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Not (Opsiyonel)</label>
+                        <textarea class="form-control" formControlName="note" rows="3"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Zaman</label>
+                        <input type="datetime-local" class="form-control" formControlName="timestamp">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="closeModal()">İptal</button>
+                <button type="button" class="btn btn-primary" (click)="save()" [disabled]="form.invalid">Kaydet</button>
+            </div>
+        </div>
+    </div>
+</div>

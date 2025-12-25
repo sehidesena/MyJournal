@@ -1,0 +1,128 @@
+<div class="chat-layout">
+  <!-- Sidebar -->
+  <div class="sidebar glass-panel">
+    <div class="sidebar-header">
+      <div class="brand">
+        <i class="fas fa-brain me-2 text-primary"></i>
+        <span>{{ '::Chat:Title' | abpLocalization }}</span>
+      </div>
+      <button class="btn-new-chat" (click)="createNewSession()" title="{{ '::Chat:NewSession' | abpLocalization }}">
+        <i class="fas fa-plus"></i>
+      </button>
+    </div>
+
+    <div class="session-list custom-scrollbar">
+      <div *ngFor="let session of sessions" class="session-item" [class.active]="currentSession?.id === session.id"
+        (click)="selectSession(session)">
+
+        <div class="session-icon">
+          <i class="far fa-comments"></i>
+        </div>
+
+        <div class="session-info">
+          <span class="session-title" [title]="session.title">{{ session.title }}</span>
+          <span class="session-date">{{ session.creationTime | date:'dd MMM, HH:mm' }}</span>
+        </div>
+
+        <button class="btn-delete-session" (click)="deleteSession($event, session.id)"
+          title="{{ '::Chat:DeleteSession' | abpLocalization }}">
+          <i class="fas fa-trash-alt"></i>
+        </button>
+      </div>
+
+      <div *ngIf="sessions.length === 0" class="no-sessions">
+        <p>{{ '::Chat:NoSessions' | abpLocalization }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chat Main Area -->
+  <div class="chat-main">
+    <div class="chat-wrapper glass-panel">
+      <!-- Header -->
+      <div class="chat-header" *ngIf="currentSession">
+        <div class="header-info">
+          <h2>{{ currentSession.title }}</h2>
+          <span class="status-badge">
+            <span class="dot"></span> {{ '::Chat:Online' | abpLocalization }}
+          </span>
+        </div>
+        <!-- Future: Add header actions (Clear, Export, etc.) -->
+      </div>
+
+      <!-- Messages Area -->
+      <div class="messages-area custom-scrollbar" #scrollContainer>
+        <!-- Welcome / Empty State -->
+        <div *ngIf="!currentSession" class="empty-state">
+          <div class="icon-container">
+            <i class="fas fa-robot fa-3x"></i>
+          </div>
+          <h3>{{ '::Chat:AssistantTitle' | abpLocalization }}</h3>
+          <p>{{ '::Chat:AssistantDesc' | abpLocalization }}</p>
+          <button class="btn btn-primary btn-lg mt-3" (click)="createNewSession()">
+            <i class="fas fa-plus me-2"></i> {{ '::Chat:StartNewChat' | abpLocalization }}
+          </button>
+        </div>
+
+        <div *ngIf="currentSession && messages.length === 0" class="empty-state small">
+          <i class="fas fa-hand-sparkles fa-2x mb-3 text-primary"></i>
+          <p>{{ '::Chat:Greeting' | abpLocalization }}</p>
+        </div>
+
+        <!-- Chat Stream -->
+        <ng-container *ngFor="let msg of messages">
+          <div class="message-row" [class.user]="msg.sender === chatSender.User"
+            [class.ai]="msg.sender !== chatSender.User">
+
+            <div class="avatar">
+              <i class="fas" [class.fa-user]="msg.sender === chatSender.User"
+                [class.fa-robot]="msg.sender !== chatSender.User"></i>
+            </div>
+
+            <div class="bubble-container">
+              <div class="message-bubble">
+                <ng-container *ngIf="msg.sender !== chatSender.User">
+                  <markdown [data]="msg.content"></markdown>
+                </ng-container>
+                <ng-container *ngIf="msg.sender === chatSender.User">
+                  {{ msg.content }}
+                </ng-container>
+              </div>
+              <span class="timestamp">{{ msg.creationTime | date:'HH:mm' }}</span>
+            </div>
+          </div>
+        </ng-container>
+
+        <!-- Typing Indicator -->
+        <div *ngIf="isLoading" class="message-row ai typing">
+          <div class="avatar">
+            <i class="fas fa-robot"></i>
+          </div>
+          <div class="bubble-container">
+            <div class="message-bubble typing-bubble">
+              <div class="dot"></div>
+              <div class="dot"></div>
+              <div class="dot"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Input Area -->
+      <div class="input-area" *ngIf="currentSession">
+        <div class="input-container">
+          <textarea #messageInput rows="1" placeholder="{{ '::Chat:InputPlaceholder' | abpLocalization }}"
+            [(ngModel)]="newMessage" (keydown.enter)="onEnter($event)" (input)="autoResize($event.target)"
+            [disabled]="isLoading"></textarea>
+
+          <button class="btn-send" (click)="sendMessage()" [disabled]="isLoading || !newMessage.trim()">
+            <i class="fas fa-paper-plane"></i>
+          </button>
+        </div>
+        <div class="input-footer">
+          <small>{{ '::Chat:Disclaimer' | abpLocalization }}</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

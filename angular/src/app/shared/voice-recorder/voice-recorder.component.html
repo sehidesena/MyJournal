@@ -1,0 +1,17 @@
+<div class="voice-recorder-container">
+    <div class="record-controls">
+        <button class="record-btn" [class.recording]="isRecording"
+            (click)="isRecording ? stopRecording() : startRecording()">
+            <i class="fas" [class.fa-microphone]="!isRecording" [class.fa-stop]="isRecording"></i>
+        </button>
+        <span class="timer" *ngIf="isRecording">{{ recordingTime }}</span>
+    </div>
+
+    <div class="audio-preview" *ngIf="audioUrl && !isRecording">
+        <audio [src]="audioUrl" controls></audio>
+    </div>
+
+    <div class="error-message" *ngIf="errorMessage">
+        {{ errorMessage }}
+    </div>
+</div>
